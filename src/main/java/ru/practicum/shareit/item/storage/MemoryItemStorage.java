@@ -2,7 +2,6 @@ package ru.practicum.shareit.item.storage;
 
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,7 +14,7 @@ public class MemoryItemStorage implements ItemStorage {
     private int itemCounter = 0;
 
     @Override
-    public Item create(Item item){
+    public Item create(Item item) {
         itemCounter++;
         item.setId(itemCounter);
         items.put(item.getId(),item);
@@ -23,25 +22,25 @@ public class MemoryItemStorage implements ItemStorage {
     }
 
     @Override
-    public Item update(Item item){
+    public Item update(Item item) {
         items.put(item.getId(),item);
         return items.get(item.getId());
     }
 
     @Override
-    public Item getItemById(int id){
+    public Item getItemById(int id) {
         return items.get(id);
     }
 
     @Override
-    public Collection<Item> getUsersItems(int userId){
+    public Collection<Item> getUsersItems(int userId) {
         return items.values().stream()
                 .filter(item -> item.getOwner().getId() == userId)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Collection<Item> searchItems(String query){
+    public Collection<Item> searchItems(String query) {
         if (query.isBlank()) {
             return List.of();
         }

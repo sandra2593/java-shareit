@@ -16,7 +16,7 @@ public class MemoryUserStorage implements UserStorage {
     @Override
     public User create(User user) {
         if (duplicateEmail(user)) {
-            throw new DuplicateEmailException("есть такой email "+user.getEmail());
+            throw new DuplicateEmailException("есть такой email " + user.getEmail());
         }
         userCounter++;
         user.setId(userCounter);
@@ -27,7 +27,7 @@ public class MemoryUserStorage implements UserStorage {
     @Override
     public User update(User user) {
         if (duplicateEmail(user)) {
-            throw new DuplicateEmailException("есть такой email "+user.getEmail());
+            throw new DuplicateEmailException("есть такой email " + user.getEmail());
         }
         users.put(user.getId(),user);
         return users.get(user.getId());
@@ -42,7 +42,7 @@ public class MemoryUserStorage implements UserStorage {
     public User getUserById(int id) {
         User user = users.get(id);
         if (user == null) {
-            throw new NotFoundException("нет пользователя с id "+ id);
+            throw new NotFoundException("нет пользователя с id " + id);
         }
         return user;
     }

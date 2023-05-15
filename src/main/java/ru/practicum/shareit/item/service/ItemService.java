@@ -30,7 +30,7 @@ public class ItemService {
     public Item update(int itemId, int userId, Item item) {
         Item itemForUpd = itemStorage.getItemById(itemId);
         if (itemForUpd.getOwner().getId() !=  userStorage.getUserById(userId).getId()) {
-            throw new NotFoundException("владельцем товара является не "+ userStorage.getUserById(userId).getId());
+            throw new NotFoundException("владельцем товара является не " + userStorage.getUserById(userId).getId());
         }
         Item newItem = Item.builder()
                 .id(itemForUpd.getId())
