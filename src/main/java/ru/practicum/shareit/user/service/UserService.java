@@ -6,6 +6,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.Collection;
+import java.util.Objects;
 
 @Service
 public class UserService {
@@ -28,10 +29,10 @@ public class UserService {
                 .email(userForUpd.getEmail())
                 .build();
 
-        if (user.getEmail() != null) {
+        if (!Objects.isNull(user.getEmail())) {
             newUser.setEmail(user.getEmail());
         }
-        if (user.getName() != null) {
+        if (!Objects.isNull(user.getName())) {
             newUser.setName(user.getName());
         }
         return userStorage.update(newUser);

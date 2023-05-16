@@ -9,6 +9,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.Collection;
+import java.util.Objects;
 
 @Service
 public class ItemService {
@@ -41,13 +42,13 @@ public class ItemService {
                 .request(itemForUpd.getRequest())
                 .build();
 
-        if (item.getName() != null) {
+        if (!Objects.isNull(item.getName())) {
             newItem.setName(item.getName());
         }
-        if (item.getDescription() != null) {
+        if (!Objects.isNull(item.getDescription())) {
             newItem.setDescription(item.getDescription());
         }
-        if (item.getAvailable() != null) {
+        if (!Objects.isNull(item.getAvailable())) {
             newItem.setAvailable(item.getAvailable());
         }
         return itemStorage.update(newItem);

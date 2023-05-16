@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/items")
 public class ItemController {
     private final ItemService itemService;
+    private static final String HEADER_PARAM = "X-Sharer-User-Id";
 
     @Autowired
     public ItemController(ItemService itemService) {
@@ -21,12 +22,12 @@ public class ItemController {
     }
 
     @PostMapping
-    public ItemDto createItem(@RequestHeader(value = "X-Sharer-User-Id") int userId, @Valid @RequestBody ItemDto newItemDto) {
+    public ItemDto createItem(@RequestHeader(value = HEADER_PARAM) int userId, @Valid @RequestBody ItemDto newItemDto) {
         return ItemMapper.toItemDto(itemService.create(userId, ItemMapper.fromItemDto(newItemDto)));
     }
 
     @PatchMapping("/{id}")
-    public ItemDto updateItem(@PathVariable int id, @RequestHeader("X-Sharer-User-Id") int userId, @RequestBody ItemDto newItem) {
+    public ItemDto updateItem(@PathVariable int id, @RequestHeader(HEADER_PARAM) int userId, @RequestBody ItemDto newItem) {
         return ItemMapper.toItemDto(itemService.update(id, userId, ItemMapper.fromItemDto(newItem)));
     }
 
@@ -36,7 +37,7 @@ public class ItemController {
     }
 
     @GetMapping
-    Collection<ItemDto> getUserItems(@RequestHeader("X-Sharer-User-Id") int userId) {
+    Collection<ItemDto> getUserItems(@RequestHeader(HEADER_PARAM) int userId) {
         return itemService.getUsersItems(userId).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
