@@ -4,9 +4,12 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.shareit.booking.dto.BookingTimeIntervalDto;
+import ru.practicum.shareit.comment.dto.CommentDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Collection;
 
 @Data
 @Builder
@@ -19,4 +22,7 @@ public class ItemDto {
     String description;
     @NotNull(message = "Доступность должена быть указана")
     Boolean available;
+    BookingTimeIntervalDto lastBooking;
+    BookingTimeIntervalDto nextBooking;
+    Collection<CommentDto> comments;
 }
