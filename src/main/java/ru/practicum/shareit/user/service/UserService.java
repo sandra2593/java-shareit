@@ -24,14 +24,14 @@ public class UserService {
         User u = userStorage.save(user);
         if (isDuplicate) {
             userStorage.deleteById(u.getId());
-            throw new DuplicateEmailException("есть такой email " + user.getEmail() + " " + u.getId());
+            throw new DuplicateEmailException("есть такой email " + user.getEmail());
         }
         return u;
     }
 
     public User update(int id, User user) {
         if (duplicateEmail(id, user)) {
-            throw new DuplicateEmailException("есть такой email " + user.getEmail() +" "+ user.getId());
+            throw new DuplicateEmailException("есть такой email " + user.getEmail());
         }
         User userToUpdate = userStorage.findById(id).orElseThrow(() -> new NotFoundException("нет пользователя с id " + id));
         User newUser = new User();

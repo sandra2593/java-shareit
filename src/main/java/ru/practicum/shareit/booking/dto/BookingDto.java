@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import org.springframework.validation.annotation.Validated;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.item.dto.ItemDtoShort;
 import ru.practicum.shareit.user.dto.UserDtoShort;
@@ -17,9 +16,9 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookingDto {
     int id;
-    @NotNull(message = "Дата начала брони не может быть пустой")
+    @NotNull(message = "Дата начала брони не пустая")
     LocalDateTime start;
-    @NotNull(message = "Дата окончания брони не может быть пустой")
+    @NotNull(message = "Дата окончания брони не пустая")
     LocalDateTime end;
     ItemDtoShort item;
     UserDtoShort booker;
