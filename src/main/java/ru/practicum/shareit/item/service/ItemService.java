@@ -22,7 +22,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class ItemService {
+public class ItemService implements ItemServiceInterface {
     private final ItemStorageDb itemStorage;
     private final CommentStorageDb commentStorage;
     private final UserService userService;
@@ -147,13 +147,13 @@ public class ItemService {
                 continue;
             }
 
-            if (lastBooking != null) {
+            if (Objects.nonNull(lastBooking)) {
                 itemDto.setLastBooking(BookingMapper.toBookingTimeIntervalDto(lastBooking));
             }
-            if (nextBooking != null) {
+            if (Objects.nonNull(nextBooking)) {
                 itemDto.setNextBooking(BookingMapper.toBookingTimeIntervalDto(nextBooking));
             }
-            if (itemComments != null) {
+            if (Objects.nonNull(itemComments)) {
                 itemDto.setComments(itemComments.stream().map(CommentMapper::toCommentDto).collect(Collectors.toList()));
             }
             itemDtoList.add(itemDto);

@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 
 @Service
-public class CommentService {
+public class CommentService implements CommentServiceInterface {
     private final UserService userService;
     private final CommentStorageDb commentStorage;
     private final ItemService itemService;

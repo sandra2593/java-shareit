@@ -13,13 +13,10 @@ import java.time.LocalDateTime;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommentDto {
-    private long id;
-
+    int id;
     @NotBlank(message = "Текст комментария не должен быть пустым.")
     @Size(max = 1000, message = "Длина комментария не может превышать 1000 символов.")
-    private String text;
-
-    private String authorName;
-
-    private LocalDateTime created;
+    String text;
+    String authorName;
+    LocalDateTime created;
 }

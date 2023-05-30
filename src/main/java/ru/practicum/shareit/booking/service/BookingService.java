@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 
 @Service
-public class BookingService {
+public class BookingService implements BookingServiceInterface {
 
     private final BookingStorageDb bookingStorage;
     private final ItemService itemService;
@@ -31,7 +31,7 @@ public class BookingService {
     }
 
     @Transactional
-    public Booking createBooking(int userId, BookingDtoShort newBooking) {
+    public Booking create(int userId, BookingDtoShort newBooking) {
         if (!isValidPeriod(newBooking)) {
             throw new ValidationException("период бронирования не валидный");
         }
@@ -54,7 +54,7 @@ public class BookingService {
     }
 
     @Transactional
-    public Booking approveBooking(int bookingId, int userId, boolean isApproved) {
+    public Booking approve(int bookingId, int userId, boolean isApproved) {
         User owner = userService.getUserById(userId);
         Booking bookingToApprove = getBookingById(bookingId, owner.getId());
 

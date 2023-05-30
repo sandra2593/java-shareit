@@ -9,16 +9,18 @@ import ru.practicum.shareit.comment.service.CommentService;
 import javax.validation.Valid;
 
 @RestController
+@RequestMapping("/items")
 public class CommentController {
     private final CommentService commentService;
+    private static final String HEADER_PARAM = "X-Sharer-User-Id";
 
     @Autowired
     public CommentController(CommentService commentService) {
         this.commentService = commentService;
     }
 
-    @PostMapping("/items/{itemId}/comment")
-    public CommentDto addComment(@PathVariable int itemId, @RequestHeader(value = "X-Sharer-User-Id") int userId, @Valid @RequestBody CommentDto commentDto) {
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addComment(@PathVariable int itemId, @RequestHeader(value = HEADER_PARAM) int userId, @Valid @RequestBody CommentDto commentDto) {
         return CommentMapper.toCommentDto(commentService.addComment(itemId, userId, CommentMapper.fromCommentDto(commentDto)));
     }
 }

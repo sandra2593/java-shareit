@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 public class BookingController {
 
     private final BookingService bookingService;
+    private static final String HEADER_PARAM = "X-Sharer-User-Id";
 
     @Autowired
     public BookingController(BookingService bookingService) {
@@ -24,28 +25,28 @@ public class BookingController {
     }
 
     @PostMapping
-    BookingDto createBooking(@RequestHeader(value = "X-Sharer-User-Id") int userId, @Valid @RequestBody BookingDtoShort newBookingDto
+    BookingDto createBooking(@RequestHeader(value = HEADER_PARAM) int userId, @Valid @RequestBody BookingDtoShort newBookingDto
     ) {
-        return BookingMapper.toBookingDto(bookingService.createBooking(userId, newBookingDto));
+        return BookingMapper.toBookingDto(bookingService.create(userId, newBookingDto));
     }
 
     @PatchMapping("/{bookingId}")
-    BookingDto approveBooking(@PathVariable int bookingId, @RequestHeader("X-Sharer-User-Id") int userId, @RequestParam boolean approved) {
-        return BookingMapper.toBookingDto(bookingService.approveBooking(bookingId, userId, approved));
+    BookingDto approveBooking(@PathVariable int bookingId, @RequestHeader(HEADER_PARAM) int userId, @RequestParam boolean approved) {
+        return BookingMapper.toBookingDto(bookingService.approve(bookingId, userId, approved));
     }
 
     @GetMapping("/{bookingId}")
-    BookingDto getBookingById(@PathVariable int bookingId, @RequestHeader("X-Sharer-User-Id") int userId) {
+    BookingDto getBookingById(@PathVariable int bookingId, @RequestHeader(HEADER_PARAM) int userId) {
         return BookingMapper.toBookingDto(bookingService.getBookingById(bookingId, userId));
     }
 
     @GetMapping
-    Collection<BookingDto> getUserBookings(@RequestHeader("X-Sharer-User-Id") int userId, @RequestParam(defaultValue = "ALL") BookingState state) {
+    Collection<BookingDto> getUserBookings(@RequestHeader(HEADER_PARAM) int userId, @RequestParam(defaultValue = "ALL") BookingState state) {
         return bookingService.getUserBookings(userId, state).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }
 
     @GetMapping("/owner")
-    Collection<BookingDto> getOwnedItemsBookings(@RequestHeader("X-Sharer-User-Id") int ownerId, @RequestParam(defaultValue = "ALL") BookingState state) {
+    Collection<BookingDto> getOwnedItemsBookings(@RequestHeader(HEADER_PARAM) int ownerId, @RequestParam(defaultValue = "ALL") BookingState state) {
         return bookingService.getOwnedItemsBookings(ownerId, state).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }
 }

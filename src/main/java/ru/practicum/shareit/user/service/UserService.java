@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 @Service
-public class UserService {
+public class UserService implements UserServiceInterface {
     private final UserStorageDb userStorage;
 
     @Autowired
