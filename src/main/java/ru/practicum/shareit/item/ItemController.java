@@ -32,13 +32,13 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public ItemDto getItemById(@PathVariable int id) {
-        return ItemMapper.toItemDto(itemService.getItemById(id));
+    public ItemDto getItemById(@PathVariable int id, @RequestHeader(HEADER_PARAM) int userId) {
+        return itemService.getItemByIdWithBookingIntervals(id, userId);
     }
 
     @GetMapping
     Collection<ItemDto> getUserItems(@RequestHeader(HEADER_PARAM) int userId) {
-        return itemService.getUsersItems(userId).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+        return itemService.getUserItemsWithBookingIntervals(userId);
     }
 
     @GetMapping("/search")

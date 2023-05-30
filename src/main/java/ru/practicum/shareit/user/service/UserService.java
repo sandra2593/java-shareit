@@ -2,51 +2,71 @@ package ru.practicum.shareit.user.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.DuplicateEmailException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.user.storage.UserStorageDb;
 
 import java.util.Collection;
 import java.util.Objects;
 
 @Service
-public class UserService {
-    private final UserStorage userStorage;
+public class UserService implements UserServiceInterface {
+    private final UserStorageDb userStorage;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(UserStorageDb userStorage) {
         this.userStorage = userStorage;
     }
 
     public User create(User user) {
-        return userStorage.create(user);
+        Boolean isDuplicate = duplicateEmail(user.getId(), user);
+        User u = userStorage.save(user);
+        if (isDuplicate) {
+            userStorage.deleteById(u.getId());
+            throw new DuplicateEmailException("есть такой email " + user.getEmail());
+        }
+        return u;
     }
 
     public User update(int id, User user) {
-        User userForUpd = userStorage.getUserById(id);
-        User newUser = User.builder()
-                .id(userForUpd.getId())
-                .name(userForUpd.getName())
-                .email(userForUpd.getEmail())
-                .build();
+        if (duplicateEmail(id, user)) {
+            throw new DuplicateEmailException("есть такой email " + user.getEmail());
+        }
+        User userToUpdate = userStorage.findById(id).orElseThrow(() -> new NotFoundException("нет пользователя с id " + id));
+        User newUser = new User();
+        newUser.setId(userToUpdate.getId());
+        newUser.setName(userToUpdate.getName());
+        newUser.setEmail(userToUpdate.getEmail());
 
-        if (!Objects.isNull(user.getEmail())) {
+        if (Objects.nonNull(user.getEmail())) {
             newUser.setEmail(user.getEmail());
         }
-        if (!Objects.isNull(user.getName())) {
+        if (Objects.nonNull(user.getName())) {
             newUser.setName(user.getName());
         }
-        return userStorage.update(newUser);
+
+        return userStorage.save(newUser);
     }
 
     public void delete(int id) {
-        userStorage.delete(id);
+        userStorage.deleteById(id);
     }
 
     public User getUserById(int id) {
-        return userStorage.getUserById(id);
+        return userStorage.findById(id).orElseThrow(() -> new NotFoundException("нет пользователя с id " + id));
     }
 
     public Collection<User> getAll() {
-        return userStorage.getAll();
+        return userStorage.findAll();
+    }
+
+    private Boolean duplicateEmail(int id, User user) {
+        for (User u : userStorage.findAll()) {
+            if (u.getEmail().equals(user.getEmail()) && u.getId() != id) {
+                return true;
+            }
+        }
+        return false;
     }
 }
