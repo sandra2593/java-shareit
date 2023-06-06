@@ -2,6 +2,7 @@ package ru.practicum.shareit.user.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.DuplicateEmailException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.model.User;
@@ -19,6 +20,8 @@ public class UserService implements UserServiceInterface {
         this.userStorage = userStorage;
     }
 
+    @Override
+    @Transactional
     public User create(User user) {
         Boolean isDuplicate = duplicateEmail(user.getId(), user);
         User u = userStorage.save(user);
@@ -29,6 +32,8 @@ public class UserService implements UserServiceInterface {
         return u;
     }
 
+    @Override
+    @Transactional
     public User update(int id, User user) {
         if (duplicateEmail(id, user)) {
             throw new DuplicateEmailException("есть такой email " + user.getEmail());
@@ -49,14 +54,20 @@ public class UserService implements UserServiceInterface {
         return userStorage.save(newUser);
     }
 
+    @Override
+    @Transactional
     public void delete(int id) {
         userStorage.deleteById(id);
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public User getUserById(int id) {
         return userStorage.findById(id).orElseThrow(() -> new NotFoundException("нет пользователя с id " + id));
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public Collection<User> getAll() {
         return userStorage.findAll();
     }

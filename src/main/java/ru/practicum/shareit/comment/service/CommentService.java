@@ -32,6 +32,7 @@ public class CommentService implements CommentServiceInterface {
         this.bookingStorage = bookingStorage;
     }
 
+    @Override
     @Transactional
     public Comment addComment(int itemId, int userId, Comment newComment) {
         User user = userService.getUserById(userId);

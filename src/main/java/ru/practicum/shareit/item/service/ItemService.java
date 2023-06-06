@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -15,6 +16,8 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorageDb;
+import ru.practicum.shareit.request.model.Request;
+import ru.practicum.shareit.request.service.RequestService;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -27,23 +30,36 @@ public class ItemService implements ItemServiceInterface {
     private final CommentStorageDb commentStorage;
     private final UserService userService;
     private final BookingStorageDb bookingStorage;
+    private final RequestService requestService;
 
     @Autowired
-    public ItemService(ItemStorageDb itemStorage, UserService userService, CommentStorageDb commentStorage, BookingStorageDb bookingStorage) {
+    public ItemService(ItemStorageDb itemStorage, UserService userService, CommentStorageDb commentStorage, BookingStorageDb bookingStorage, RequestService requestService) {
         this.itemStorage = itemStorage;
         this.userService = userService;
         this.commentStorage = commentStorage;
         this.bookingStorage = bookingStorage;
+        this.requestService = requestService;
     }
 
+    @Override
     @Transactional
-    public Item create(int userId, Item item) {
+    public Item create(int userId, ItemDto newItemDto) {
         User owner = userService.getUserById(userId);
-        item.setOwner(owner);
 
-        return itemStorage.save(item);
+        Item i = new Item();
+        if (newItemDto.getRequestId() != null) {
+            Request itemRequest = requestService.getItemRequestById(owner.getId(), newItemDto.getRequestId());
+            i.setRequest(itemRequest);
+        }
+        i.setName(newItemDto.getName());
+        i.setDescription(newItemDto.getDescription());
+        i.setAvailable(newItemDto.getAvailable());
+        i.setOwner(owner);
+
+        return itemStorage.save(i);
     }
 
+    @Override
     @Transactional
     public Item update(int itemId, int userId, Item item) {
         Item itemToUpdate = getItemById(itemId);
@@ -74,11 +90,13 @@ public class ItemService implements ItemServiceInterface {
         return itemStorage.save(itemForUpd);
     }
 
+    @Override
     @Transactional
     public Item getItemById(int id) {
         return itemStorage.findById(id).orElseThrow(() -> new NotFoundException("нет товара с id " + id));
     }
 
+    @Override
     @Transactional
     public Collection<Item> getUsersItems(int userId) {
         User user = userService.getUserById(userId);
@@ -86,6 +104,7 @@ public class ItemService implements ItemServiceInterface {
         return itemStorage.findItemByOwner(user);
     }
 
+    @Override
     @Transactional
     public ItemDto getItemByIdWithBookingIntervals(int itemId, int userId) {
         User user = userService.getUserById(userId);
@@ -109,12 +128,14 @@ public class ItemService implements ItemServiceInterface {
         return itemDto;
     }
 
+    @Override
     @Transactional(readOnly = true)
     public Collection<Item> getUserItems(int userId) {
         User user = userService.getUserById(userId);
         return itemStorage.findItemByOwner(user);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public Collection<ItemDto> getUserItemsWithBookingIntervals(int userId) {
         List<ItemDto> itemDtoList = new ArrayList<>();
@@ -164,12 +185,13 @@ public class ItemService implements ItemServiceInterface {
         return itemDtoList;
     }
 
+    @Override
     @Transactional
-    public Collection<Item> searchItems(String text) {
+    public Collection<Item> searchItems(String text, Pageable pageable) {
         if (text.isBlank()) {
             return List.of();
         }
 
-        return itemStorage.searchItems(text.toLowerCase());
+        return itemStorage.searchItems(text.toLowerCase(), pageable);
     }
 }

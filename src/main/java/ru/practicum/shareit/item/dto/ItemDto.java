@@ -25,4 +25,5 @@ public class ItemDto {
     BookingTimeIntervalDto lastBooking;
     BookingTimeIntervalDto nextBooking;
     Collection<CommentDto> comments;
+    Integer requestId;
 }

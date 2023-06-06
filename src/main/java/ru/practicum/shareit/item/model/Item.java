@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.model;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.DynamicUpdate;
+import ru.practicum.shareit.request.model.Request;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
@@ -28,6 +29,7 @@ public class Item {
     @OneToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
     User owner;
-    @Column(name = "request_id")
-    int request;
+    @ManyToOne
+    @JoinColumn(name = "request_id", referencedColumnName = "id")
+    Request request;
 }
