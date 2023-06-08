@@ -1,8 +1,6 @@
 package ru.practicum.shareit.item.dto;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.booking.dto.BookingTimeIntervalDto;
 import ru.practicum.shareit.comment.dto.CommentDto;
@@ -14,6 +12,8 @@ import java.util.Collection;
 @Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@NoArgsConstructor
 public class ItemDto {
     int id;
     @NotBlank(message = "Название не должно быть пустым")

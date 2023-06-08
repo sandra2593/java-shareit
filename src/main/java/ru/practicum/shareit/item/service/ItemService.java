@@ -66,7 +66,7 @@ public class ItemService implements ItemServiceInterface {
         User user = userService.getUserById(userId);
 
         if (itemToUpdate.getOwner().getId() != user.getId()) {
-            throw new NotOwnerException("пользователя с id " + userId + " не владелец товара с id " + itemId);
+            throw new NotOwnerException("пользователь с id " + userId + " не владелец товара с id " + itemId);
         }
         Item itemForUpd = new Item();
 

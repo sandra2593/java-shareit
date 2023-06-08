@@ -83,7 +83,7 @@ public class BookingService implements BookingServiceInterface {
         Booking booking = bookingStorage.findById(bookingId).orElseThrow(() -> new NotFoundException("нет букинга с id " + bookingId));
 
         if (booking.getBooker().getId() != userId && booking.getItem().getOwner().getId() != userId) {
-            throw new NoAccessToBookException("пользователь с id " + userId + "не имеет доступа к " + booking.getId());
+            throw new NoAccessToBookException("пользователь с id " + userId + " не имеет доступа к " + booking.getId());
         }
 
         return booking;
