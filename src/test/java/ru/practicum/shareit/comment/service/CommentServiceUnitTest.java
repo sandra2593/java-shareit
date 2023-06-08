@@ -14,7 +14,6 @@ import ru.practicum.shareit.comment.storage.CommentStorageDb;
 import ru.practicum.shareit.exception.CannotCommentException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.item.storage.ItemStorageDb;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 

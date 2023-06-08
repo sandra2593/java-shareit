@@ -162,7 +162,7 @@ public class BookingServiceUnitTest {
         when(bookingStorage.findById(anyInt())).thenReturn(Optional.of(bookingToApprove));
         when(bookingStorage.save(any(Booking.class))).thenReturn(rejectedBooking);
 
-        Booking resultBooking = bookingService.approve( bookingToApprove.getId(), owner.getId(), false);
+        Booking resultBooking = bookingService.approve(bookingToApprove.getId(), owner.getId(), false);
 
         assertThat(resultBooking).usingRecursiveComparison().isEqualTo(rejectedBooking);
     }
@@ -207,6 +207,7 @@ public class BookingServiceUnitTest {
         Collection<Booking> bookingsALL = bookingService.getUserBookings(booker.getId(), bookingState, PageRequest.of(0, 2000));
         assertThat(bookingsALL).contains(bookingToApprove);
     }
+
     @Test
     void testGetUserBookingsStatusFuture() {
         when(userService.getUserById(anyInt())).thenReturn(booker);
