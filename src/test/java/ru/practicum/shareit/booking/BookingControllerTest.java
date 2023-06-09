@@ -166,6 +166,14 @@ public class BookingControllerTest {
     }
 
     @Test
+    void testGetUserBookingsWrongStatus() throws Exception {
+
+        mvc.perform(get("/bookings?state=UNSUPPORTED_STATUS").header(HEADER_PARAM, 1)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void testGetUserBookings() throws Exception {
         when(bookingService.getUserBookings(anyInt(), any(BookingState.class), any(Pageable.class))).thenReturn(List.of(booking));
 
