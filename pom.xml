@@ -203,9 +203,7 @@
 									<exclude>**/exception/**</exclude>
 									<exclude>**/pagination/**</exclude>
 									<exclude>**/convert/**</exclude>
-									<exclude>**/SharaItApp.class</exclude>
-									<exclude>**/model/**</exclude>
-									<exclude>**/dto/**</exclude>
+									<exclude>**/exception/WrongBookingStatusException.class</exclude>
 								</excludes>
 							</configuration>
 						</execution>
