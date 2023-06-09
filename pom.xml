@@ -203,6 +203,7 @@
 									<exclude>**/exception/**</exclude>
 									<exclude>**/pagination/**</exclude>
 									<exclude>**/convert/**</exclude>
+									<exclude>**/SharaItApp.class</exclude>
 								</excludes>
 							</configuration>
 						</execution>
