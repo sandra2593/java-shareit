@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.exception.DuplicateEmailException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.model.User;
 
@@ -24,6 +25,7 @@ public class UserServiceUnitTest {
     private final EntityManager em;
     private final UserService userService;
     private User oldUser;
+    private User user;
 
     @BeforeEach
     void beforeEach() {
@@ -31,7 +33,12 @@ public class UserServiceUnitTest {
         oldUser.setName("user");
         oldUser.setEmail("user@mail.com");
 
+        user = new User();
+        user.setName("user1");
+        user.setEmail("user1@mail.com");
+
         em.persist(oldUser);
+        em.persist(user);
         em.flush();
     }
 
@@ -104,6 +111,25 @@ public class UserServiceUnitTest {
         assertThatThrownBy(() -> userService.update(999, updatedUser))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("нет пользователя с id 999");
+
+        TypedQuery<User> query = em.createQuery("Select u from User u where u.id = :id", User.class);
+        User user = query.setParameter("id", oldUser.getId()).getSingleResult();
+
+        assertThat(user.getId()).isEqualTo(oldUser.getId());
+        assertThat(user.getName()).isEqualTo(oldUser.getName());
+        assertThat(user.getEmail()).isEqualTo(oldUser.getEmail());
+    }
+
+    @Test
+    void testUpdateSameEmail() {
+        User updatedUser = new User();
+        updatedUser.setId(10);
+        updatedUser.setName("user");
+        updatedUser.setEmail("user@mail.com");
+
+        assertThatThrownBy(() -> userService.update(10, updatedUser))
+                .isInstanceOf(DuplicateEmailException.class)
+                .hasMessageContaining("есть такой email user@mail.com");
 
         TypedQuery<User> query = em.createQuery("Select u from User u where u.id = :id", User.class);
         User user = query.setParameter("id", oldUser.getId()).getSingleResult();
