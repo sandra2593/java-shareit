@@ -203,6 +203,7 @@
 									<exclude>**/exception/**</exclude>
 									<exclude>**/pagination/**Dto**</exclude>
 									<exclude>**/convert/**</exclude>
+									<exclude>**/model/**</exclude>
 								</excludes>
 							</configuration>
 						</execution>
