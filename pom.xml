@@ -139,6 +139,11 @@
 					<version>0.8.8</version>
 					<configuration>
 						<output>file</output>
+						<excludes>
+							<exclude>**/exception/**</exclude>
+							<exclude>**/pagination/**</exclude>
+							<exclude>**/convert/**</exclude>
+						</excludes>
 					</configuration>
 					<executions>
 						<execution>
@@ -198,14 +203,6 @@
 							<goals>
 								<goal>report</goal>
 							</goals>
-							<configuration>
-								<excludes>
-									<exclude>**/exception/**</exclude>
-									<exclude>**/pagination/**</exclude>
-									<exclude>**/convert/**</exclude>
-									<exclude>ru/practicum/shareit/**/*Dto.*</exclude>
-								</excludes>
-							</configuration>
 						</execution>
 					</executions>
 				</plugin>
