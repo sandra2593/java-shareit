@@ -3,12 +3,14 @@ package ru.practicum.shareit.user.service;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.storage.UserStorageDb;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -23,16 +25,25 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class UserServiceUnitTest {
     private final EntityManager em;
     private final UserService userService;
+    private UserStorageDb userStorage;
     private User oldUser;
 
     @BeforeEach
     void beforeEach() {
         oldUser = new User();
         oldUser.setName("user");
-        oldUser.setEmail("juser@mail.com");
+        oldUser.setEmail("user@mail.com");
 
         em.persist(oldUser);
         em.flush();
+    }
+
+    @Test
+    void testCreate() {
+        User createdItem = userService.create(oldUser);
+
+        assertThat(createdItem).isNotNull();
+        assertThat(createdItem).usingRecursiveComparison().isEqualTo(oldUser);
     }
 
     @Test
@@ -90,8 +101,8 @@ public class UserServiceUnitTest {
     void testUpdateUserNotExist() {
         User updatedUser = new User();
         updatedUser.setId(999);
-        updatedUser.setName("user");
-        updatedUser.setEmail("user@mail.com");
+        updatedUser.setName("updatedUser");
+        updatedUser.setEmail("updatedUser@mail.com");
 
         assertThatThrownBy(() -> userService.update(999, updatedUser))
                 .isInstanceOf(NotFoundException.class)

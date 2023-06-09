@@ -13,8 +13,6 @@ public interface ItemServiceInterface {
 
     Item getItemById(int id);
 
-    Collection<Item> getUsersItems(int userId);
-
     ItemDto getItemByIdWithBookingIntervals(int itemId, int userId);
 
     Collection<Item> getUserItems(int userId);

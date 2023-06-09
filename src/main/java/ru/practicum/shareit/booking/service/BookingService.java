@@ -113,7 +113,7 @@ public class BookingService implements BookingServiceInterface {
     @Override
     @Transactional(readOnly = true)
     public Collection<Booking> getOwnedItemsBookings(int ownerId, BookingState state, Pageable pageable) {
-        Collection<Item> items = itemService.getUsersItems(ownerId);
+        Collection<Item> items = itemService.getUserItems(ownerId);
 
         if (state.equals(BookingState.ALL)) {
             return bookingStorage.findBookingsByItemInOrderByStartDesc(items, pageable);

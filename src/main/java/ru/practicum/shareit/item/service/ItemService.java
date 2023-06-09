@@ -98,14 +98,6 @@ public class ItemService implements ItemServiceInterface {
 
     @Override
     @Transactional
-    public Collection<Item> getUsersItems(int userId) {
-        User user = userService.getUserById(userId);
-
-        return itemStorage.findItemByOwner(user);
-    }
-
-    @Override
-    @Transactional
     public ItemDto getItemByIdWithBookingIntervals(int itemId, int userId) {
         User user = userService.getUserById(userId);
         Item item = getItemById(itemId);

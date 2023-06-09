@@ -209,6 +209,16 @@ public class BookingServiceUnitTest {
     }
 
     @Test
+    void testGetOwnedItemsBookingsStatusAll() {
+        when(itemService.getUserItems(anyInt())).thenReturn(List.of(item));
+
+        BookingState bookingState = BookingState.ALL;
+        when(bookingStorage.findBookingsByItemInOrderByStartDesc(anyCollection(), any(Pageable.class))).thenReturn(List.of(bookingToApprove));
+        Collection<Booking> bookingsALL = bookingService.getOwnedItemsBookings(owner.getId(), bookingState, PageRequest.of(0, 2000));
+        assertThat(bookingsALL).contains(bookingToApprove);
+    }
+
+    @Test
     void testGetUserBookingsStatusFuture() {
         when(userService.getUserById(anyInt())).thenReturn(booker);
 
@@ -223,6 +233,21 @@ public class BookingServiceUnitTest {
     }
 
     @Test
+    void testGetOwnedItemsBookingsStatusFuture() {
+        when(itemService.getUserItems(anyInt())).thenReturn(List.of(item));
+
+        BookingState bookingState = BookingState.FUTURE;
+        Booking futureBooking = copyBooking(bookingToApprove);
+        futureBooking.setStart(LocalDateTime.now().plusDays(10));
+        futureBooking.setEnd(LocalDateTime.now().plusDays(2));
+        when(bookingStorage.findBookingsByItemInAndStartAfterOrderByStartDesc(anyCollection(), any(LocalDateTime.class), any(Pageable.class)))
+                .thenReturn(List.of(futureBooking));
+        Collection<Booking> bookingsFUTURE = bookingService.getOwnedItemsBookings(owner.getId(), bookingState, PageRequest.of(0, 2000));
+        assertThat(bookingsFUTURE).contains(futureBooking);
+
+    }
+
+    @Test
     void testGetUserBookingsStatusPast() {
         when(userService.getUserById(anyInt())).thenReturn(booker);
 
@@ -233,6 +258,20 @@ public class BookingServiceUnitTest {
         when(bookingStorage.findBookingsByBookerAndEndBeforeOrderByStartDesc(any(User.class), any(LocalDateTime.class), any(Pageable.class)))
                 .thenReturn(List.of(pastBooking));
         Collection<Booking> bookingsPAST = bookingService.getUserBookings(booker.getId(), bookingState, PageRequest.of(0, 2000));
+        assertThat(bookingsPAST).contains(pastBooking);
+    }
+
+    @Test
+    void testGetOwnedItemsBookingsStatusPast() {
+        when(itemService.getUserItems(anyInt())).thenReturn(List.of(item));
+
+        BookingState bookingState = BookingState.PAST;
+        Booking pastBooking = copyBooking(bookingToApprove);
+        pastBooking.setStart(LocalDateTime.now().minusDays(10));
+        pastBooking.setEnd(LocalDateTime.now().minusDays(8));
+        when(bookingStorage.findBookingsByItemInAndEndBeforeOrderByStartDesc(anyCollection(), any(LocalDateTime.class), any(Pageable.class)))
+                .thenReturn(List.of(pastBooking));
+        Collection<Booking> bookingsPAST = bookingService.getOwnedItemsBookings(owner.getId(), bookingState, PageRequest.of(0, 2000));
         assertThat(bookingsPAST).contains(pastBooking);
     }
 
@@ -251,6 +290,20 @@ public class BookingServiceUnitTest {
     }
 
     @Test
+    void testGetOwnedItemsBookingsStatusCurrent() {
+        when(itemService.getUserItems(anyInt())).thenReturn(List.of(item));
+
+        BookingState bookingState = BookingState.CURRENT;
+        Booking currentBooking = copyBooking(bookingToApprove);
+        currentBooking.setStart(LocalDateTime.now().minusDays(1));
+        currentBooking.setEnd(LocalDateTime.now().plusDays(2));
+        when(bookingStorage.findBookingsByItemInAndStartBeforeAndEndAfterOrderByStartDesc(anyCollection(), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class)))
+                .thenReturn(List.of(currentBooking));
+        Collection<Booking> bookingsCURRENT = bookingService.getOwnedItemsBookings(owner.getId(), bookingState, PageRequest.of(0, 2000));
+        assertThat(bookingsCURRENT).contains(currentBooking);
+    }
+
+    @Test
     void testGetUserBookingsStatusRejected() {
         when(userService.getUserById(anyInt())).thenReturn(booker);
 
@@ -262,6 +315,21 @@ public class BookingServiceUnitTest {
         when(bookingStorage.findBookingsByBookerAndStatusOrderByStartDesc(any(User.class), any(BookingState.class), any(Pageable.class)))
                 .thenReturn(List.of(rejectedBooking));
         Collection<Booking> bookingsREJECTED = bookingService.getUserBookings(booker.getId(), bookingState, PageRequest.of(0, 2000));
+        assertThat(bookingsREJECTED).contains(rejectedBooking);
+    }
+
+    @Test
+    void testGetOwnedItemsBookingsStatusRejected() {
+        when(itemService.getUserItems(anyInt())).thenReturn(List.of(item));
+
+        BookingState bookingState = BookingState.REJECTED;
+        Booking rejectedBooking = copyBooking(bookingToApprove);
+        rejectedBooking.setStart(LocalDateTime.now().minusDays(1));
+        rejectedBooking.setEnd(LocalDateTime.now().plusDays(2));
+        rejectedBooking.setStatus(BookingState.REJECTED);
+        when(bookingStorage.findBookingsByItemInAndStatusOrderByStartDesc(anyCollection(), any(BookingState.class), any(Pageable.class)))
+                .thenReturn(List.of(rejectedBooking));
+        Collection<Booking> bookingsREJECTED = bookingService.getOwnedItemsBookings(owner.getId(), bookingState, PageRequest.of(0, 2000));
         assertThat(bookingsREJECTED).contains(rejectedBooking);
     }
 
