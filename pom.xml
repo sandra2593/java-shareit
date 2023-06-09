@@ -198,6 +198,13 @@
 							<goals>
 								<goal>report</goal>
 							</goals>
+							<configuration>
+								<excludes>
+									<exclude>**/exception/**</exclude>
+									<exclude>**/pagination/**Dto**</exclude>
+									<exclude>**/convert/**</exclude>
+								</excludes>
+							</configuration>
 						</execution>
 					</executions>
 				</plugin>
