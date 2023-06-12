@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.dto.BookingDtoShort;
 import ru.practicum.shareit.booking.model.Booking;
@@ -199,12 +198,30 @@ public class BookingServiceUnitTest {
     }
 
     @Test
+    void testGetUserBookingsWrongParam() {
+        BookingState bookingState = BookingState.ALL;
+
+        assertThatThrownBy(() -> bookingService.getUserBookings(booker.getId(), bookingState, -1, -999))
+                .isInstanceOf(ValidationException.class)
+                .hasMessageContaining("некорректная пагинация");
+    }
+
+    @Test
+    void testGetOwnedItemsBookingsWrongParam() {
+        BookingState bookingState = BookingState.ALL;
+
+        assertThatThrownBy(() -> bookingService.getOwnedItemsBookings(owner.getId(), bookingState, -1, -999))
+                .isInstanceOf(ValidationException.class)
+                .hasMessageContaining("некорректная пагинация");
+    }
+
+    @Test
     void testGetUserBookingsStatusAll() {
         when(userService.getUserById(anyInt())).thenReturn(booker);
 
         BookingState bookingState = BookingState.ALL;
         when(bookingStorage.findBookingsByBookerOrderByStartDesc(any(User.class), any(Pageable.class))).thenReturn(List.of(bookingToApprove));
-        Collection<Booking> bookingsALL = bookingService.getUserBookings(booker.getId(), bookingState, PageRequest.of(0, 2000));
+        Collection<Booking> bookingsALL = bookingService.getUserBookings(booker.getId(), bookingState, 0, 2000);
         assertThat(bookingsALL).contains(bookingToApprove);
     }
 
@@ -214,7 +231,7 @@ public class BookingServiceUnitTest {
 
         BookingState bookingState = BookingState.ALL;
         when(bookingStorage.findBookingsByItemInOrderByStartDesc(anyCollection(), any(Pageable.class))).thenReturn(List.of(bookingToApprove));
-        Collection<Booking> bookingsALL = bookingService.getOwnedItemsBookings(owner.getId(), bookingState, PageRequest.of(0, 2000));
+        Collection<Booking> bookingsALL = bookingService.getOwnedItemsBookings(owner.getId(), bookingState, 0, 2000);
         assertThat(bookingsALL).contains(bookingToApprove);
     }
 
@@ -228,7 +245,7 @@ public class BookingServiceUnitTest {
         futureBooking.setEnd(LocalDateTime.now().plusDays(2));
         when(bookingStorage.findBookingsByBookerAndStartAfterOrderByStartDesc(any(User.class), any(LocalDateTime.class), any(Pageable.class)))
                 .thenReturn(List.of(futureBooking));
-        Collection<Booking> bookingsFUTURE = bookingService.getUserBookings(booker.getId(), bookingState, PageRequest.of(0, 2000));
+        Collection<Booking> bookingsFUTURE = bookingService.getUserBookings(booker.getId(), bookingState, 0, 2000);
         assertThat(bookingsFUTURE).contains(futureBooking);
     }
 
@@ -242,7 +259,7 @@ public class BookingServiceUnitTest {
         futureBooking.setEnd(LocalDateTime.now().plusDays(2));
         when(bookingStorage.findBookingsByItemInAndStartAfterOrderByStartDesc(anyCollection(), any(LocalDateTime.class), any(Pageable.class)))
                 .thenReturn(List.of(futureBooking));
-        Collection<Booking> bookingsFUTURE = bookingService.getOwnedItemsBookings(owner.getId(), bookingState, PageRequest.of(0, 2000));
+        Collection<Booking> bookingsFUTURE = bookingService.getOwnedItemsBookings(owner.getId(), bookingState, 0, 2000);
         assertThat(bookingsFUTURE).contains(futureBooking);
 
     }
@@ -257,7 +274,7 @@ public class BookingServiceUnitTest {
         pastBooking.setEnd(LocalDateTime.now().minusDays(8));
         when(bookingStorage.findBookingsByBookerAndEndBeforeOrderByStartDesc(any(User.class), any(LocalDateTime.class), any(Pageable.class)))
                 .thenReturn(List.of(pastBooking));
-        Collection<Booking> bookingsPAST = bookingService.getUserBookings(booker.getId(), bookingState, PageRequest.of(0, 2000));
+        Collection<Booking> bookingsPAST = bookingService.getUserBookings(booker.getId(), bookingState, 0, 2000);
         assertThat(bookingsPAST).contains(pastBooking);
     }
 
@@ -271,7 +288,7 @@ public class BookingServiceUnitTest {
         pastBooking.setEnd(LocalDateTime.now().minusDays(8));
         when(bookingStorage.findBookingsByItemInAndEndBeforeOrderByStartDesc(anyCollection(), any(LocalDateTime.class), any(Pageable.class)))
                 .thenReturn(List.of(pastBooking));
-        Collection<Booking> bookingsPAST = bookingService.getOwnedItemsBookings(owner.getId(), bookingState, PageRequest.of(0, 2000));
+        Collection<Booking> bookingsPAST = bookingService.getOwnedItemsBookings(owner.getId(), bookingState, 0, 2000);
         assertThat(bookingsPAST).contains(pastBooking);
     }
 
@@ -285,7 +302,7 @@ public class BookingServiceUnitTest {
         currentBooking.setEnd(LocalDateTime.now().plusDays(2));
         when(bookingStorage.findBookingsByBookerAndStartBeforeAndEndAfterOrderByStartDesc(any(User.class), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class)))
                 .thenReturn(List.of(currentBooking));
-        Collection<Booking> bookingsCURRENT = bookingService.getUserBookings(booker.getId(), bookingState, PageRequest.of(0, 2000));
+        Collection<Booking> bookingsCURRENT = bookingService.getUserBookings(booker.getId(), bookingState, 0, 2000);
         assertThat(bookingsCURRENT).contains(currentBooking);
     }
 
@@ -299,7 +316,7 @@ public class BookingServiceUnitTest {
         currentBooking.setEnd(LocalDateTime.now().plusDays(2));
         when(bookingStorage.findBookingsByItemInAndStartBeforeAndEndAfterOrderByStartDesc(anyCollection(), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class)))
                 .thenReturn(List.of(currentBooking));
-        Collection<Booking> bookingsCURRENT = bookingService.getOwnedItemsBookings(owner.getId(), bookingState, PageRequest.of(0, 2000));
+        Collection<Booking> bookingsCURRENT = bookingService.getOwnedItemsBookings(owner.getId(), bookingState, 0, 2000);
         assertThat(bookingsCURRENT).contains(currentBooking);
     }
 
@@ -314,7 +331,7 @@ public class BookingServiceUnitTest {
         rejectedBooking.setStatus(BookingState.REJECTED);
         when(bookingStorage.findBookingsByBookerAndStatusOrderByStartDesc(any(User.class), any(BookingState.class), any(Pageable.class)))
                 .thenReturn(List.of(rejectedBooking));
-        Collection<Booking> bookingsREJECTED = bookingService.getUserBookings(booker.getId(), bookingState, PageRequest.of(0, 2000));
+        Collection<Booking> bookingsREJECTED = bookingService.getUserBookings(booker.getId(), bookingState, 0, 2000);
         assertThat(bookingsREJECTED).contains(rejectedBooking);
     }
 
@@ -329,7 +346,7 @@ public class BookingServiceUnitTest {
         rejectedBooking.setStatus(BookingState.REJECTED);
         when(bookingStorage.findBookingsByItemInAndStatusOrderByStartDesc(anyCollection(), any(BookingState.class), any(Pageable.class)))
                 .thenReturn(List.of(rejectedBooking));
-        Collection<Booking> bookingsREJECTED = bookingService.getOwnedItemsBookings(owner.getId(), bookingState, PageRequest.of(0, 2000));
+        Collection<Booking> bookingsREJECTED = bookingService.getOwnedItemsBookings(owner.getId(), bookingState, 0, 2000);
         assertThat(bookingsREJECTED).contains(rejectedBooking);
     }
 

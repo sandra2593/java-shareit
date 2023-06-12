@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +12,7 @@ import ru.practicum.shareit.booking.storage.BookingStorageDb;
 import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.pagination.Pagination;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -91,7 +93,13 @@ public class BookingService implements BookingServiceInterface {
 
     @Override
     @Transactional(readOnly = true)
-    public Collection<Booking> getUserBookings(int userId, BookingState state, Pageable pageable) {
+    public Collection<Booking> getUserBookings(int userId, BookingState state, int from, int size) {
+        if (!Pagination.isValid(from, size)) {
+            throw new ValidationException("некорректная пагинация");
+        }
+
+        int newFrom = Pagination.adjustFrom(from, size);
+        Pageable pageable = PageRequest.of(newFrom, size);
         User user = userService.getUserById(userId);
 
         if (state.equals(BookingState.ALL)) {
@@ -112,7 +120,13 @@ public class BookingService implements BookingServiceInterface {
 
     @Override
     @Transactional(readOnly = true)
-    public Collection<Booking> getOwnedItemsBookings(int ownerId, BookingState state, Pageable pageable) {
+    public Collection<Booking> getOwnedItemsBookings(int ownerId, BookingState state, int from, int size) {
+        if (!Pagination.isValid(from, size)) {
+            throw new ValidationException("некорректная пагинация");
+        }
+
+        int newFrom = Pagination.adjustFrom(from, size);
+        Pageable pageable = PageRequest.of(newFrom, size);
         Collection<Item> items = itemService.getUserItems(ownerId);
 
         if (state.equals(BookingState.ALL)) {

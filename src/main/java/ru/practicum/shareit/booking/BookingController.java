@@ -1,15 +1,12 @@
 package ru.practicum.shareit.booking;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoShort;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.exception.ValidationException;
-import ru.practicum.shareit.pagination.Pagination;
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -45,21 +42,11 @@ public class BookingController {
 
     @GetMapping
     Collection<BookingDto> getUserBookings(@RequestHeader(HEADER_PARAM) int userId, @RequestParam(defaultValue = "ALL") BookingState state, @RequestParam(defaultValue = "0") int from, @RequestParam(defaultValue = "2000") int size) {
-        if (!Pagination.isValid(from, size)) {
-            throw new ValidationException("некорректная пагинация");
-        }
-
-        int newFrom = Pagination.adjustFrom(from, size);
-        return bookingService.getUserBookings(userId, state, PageRequest.of(newFrom, size)).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
+        return bookingService.getUserBookings(userId, state, from, size).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }
 
     @GetMapping("/owner")
     Collection<BookingDto> getOwnedItemsBookings(@RequestHeader(HEADER_PARAM) int ownerId, @RequestParam(defaultValue = "ALL") BookingState state, @RequestParam(defaultValue = "0") int from, @RequestParam(defaultValue = "2000") int size) {
-        if (!Pagination.isValid(from, size)) {
-            throw new ValidationException("некорректная пагинация");
-        }
-
-        int newFrom = Pagination.adjustFrom(from, size);
-        return bookingService.getOwnedItemsBookings(ownerId, state, PageRequest.of(newFrom, size)).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
+        return bookingService.getOwnedItemsBookings(ownerId, state, from, size).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }
 }

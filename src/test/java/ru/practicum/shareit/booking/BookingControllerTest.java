@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -157,15 +156,6 @@ public class BookingControllerTest {
     }
 
     @Test
-    void testGetUserBookingsWrongParams() throws Exception {
-
-        mvc.perform(get("/bookings?from=-1&size=-999").header(HEADER_PARAM, 1).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString("message")))
-                .andExpect(jsonPath("$.message", is("некорректная пагинация")));
-    }
-
-    @Test
     void testGetUserBookingsWrongStatus() throws Exception {
 
         mvc.perform(get("/bookings?state=UNSUPPORTED_STATUS").header(HEADER_PARAM, 1)
@@ -175,7 +165,7 @@ public class BookingControllerTest {
 
     @Test
     void testGetUserBookings() throws Exception {
-        when(bookingService.getUserBookings(anyInt(), any(BookingState.class), any(Pageable.class))).thenReturn(List.of(booking));
+        when(bookingService.getUserBookings(anyInt(), any(BookingState.class), anyInt(), anyInt())).thenReturn(List.of(booking));
 
         mvc.perform(get("/bookings").header(HEADER_PARAM, 1).accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(1)))
@@ -200,7 +190,7 @@ public class BookingControllerTest {
 
     @Test
     void testGetUserBookingsNotExist() throws Exception {
-        when(bookingService.getUserBookings(anyInt(), any(BookingState.class), any(Pageable.class))).thenThrow(new NotFoundException("нет пользователя с id " + 1));
+        when(bookingService.getUserBookings(anyInt(), any(BookingState.class), anyInt(), anyInt())).thenThrow(new NotFoundException("нет пользователя с id " + 1));
 
         mvc.perform(get("/bookings").header(HEADER_PARAM, 1).accept(MediaType.APPLICATION_JSON))
                 .andExpect(content().string(containsString("message")))
@@ -209,7 +199,7 @@ public class BookingControllerTest {
 
     @Test
     void testGetOwnedItemsBookings() throws Exception {
-        when(bookingService.getOwnedItemsBookings(anyInt(), any(BookingState.class), any(Pageable.class))).thenReturn(List.of(booking));
+        when(bookingService.getOwnedItemsBookings(anyInt(), any(BookingState.class), anyInt(), anyInt())).thenReturn(List.of(booking));
 
 
         mvc.perform(get("/bookings/owner").header(HEADER_PARAM, 1).accept(MediaType.APPLICATION_JSON))
