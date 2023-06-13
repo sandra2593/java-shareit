@@ -32,6 +32,7 @@ public class CommentService implements CommentServiceInterface {
         this.bookingStorage = bookingStorage;
     }
 
+    @Override
     @Transactional
     public Comment addComment(int itemId, int userId, Comment newComment) {
         User user = userService.getUserById(userId);
@@ -39,7 +40,7 @@ public class CommentService implements CommentServiceInterface {
         Collection<Booking> finishedBookings = bookingStorage.getBookingsByBookerAndItemAndEndIsBeforeAndStatus(user, item, LocalDateTime.now(), BookingState.APPROVED);
 
         if (finishedBookings.size() == 0) {
-            throw new CannotCommentException("пользователь с id " + userId + "не может комментировать товар с id " + itemId + " ");
+            throw new CannotCommentException("пользователь с id " + userId + " не может комментировать товар с id " + itemId + " ");
         }
 
         newComment.setItem(item);

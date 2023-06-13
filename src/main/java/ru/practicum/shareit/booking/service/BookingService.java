@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDtoShort;
@@ -10,6 +12,7 @@ import ru.practicum.shareit.booking.storage.BookingStorageDb;
 import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.pagination.Pagination;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -30,6 +33,7 @@ public class BookingService implements BookingServiceInterface {
         this.userService = userService;
     }
 
+    @Override
     @Transactional
     public Booking create(int userId, BookingDtoShort newBooking) {
         if (!isValidPeriod(newBooking)) {
@@ -53,6 +57,7 @@ public class BookingService implements BookingServiceInterface {
         return bookingStorage.save(booking);
     }
 
+    @Override
     @Transactional
     public Booking approve(int bookingId, int userId, boolean isApproved) {
         User owner = userService.getUserById(userId);
@@ -75,54 +80,69 @@ public class BookingService implements BookingServiceInterface {
         return bookingStorage.save(bookingToApprove);
     }
 
+    @Override
     public Booking getBookingById(int bookingId, int userId) {
         Booking booking = bookingStorage.findById(bookingId).orElseThrow(() -> new NotFoundException("нет букинга с id " + bookingId));
 
         if (booking.getBooker().getId() != userId && booking.getItem().getOwner().getId() != userId) {
-            throw new NoAccessToBookException("пользователь с id " + userId + "не имеет доступа к " + booking.getId());
+            throw new NoAccessToBookException("пользователь с id " + userId + " не имеет доступа к " + booking.getId());
         }
 
         return booking;
     }
 
+    @Override
     @Transactional(readOnly = true)
-    public Collection<Booking> getUserBookings(int userId, BookingState state) {
+    public Collection<Booking> getUserBookings(int userId, BookingState state, int from, int size) {
+        if (!Pagination.isValid(from, size)) {
+            throw new ValidationException("некорректная пагинация");
+        }
+
+        int newFrom = Pagination.adjustFrom(from, size);
+        Pageable pageable = PageRequest.of(newFrom, size);
         User user = userService.getUserById(userId);
 
         if (state.equals(BookingState.ALL)) {
-            return bookingStorage.findBookingsByBookerOrderByStartDesc(user);
+            return bookingStorage.findBookingsByBookerOrderByStartDesc(user, pageable);
         }
         if (state.equals(BookingState.FUTURE)) {
-            return bookingStorage.findBookingsByBookerAndStartAfterOrderByStartDesc(user, LocalDateTime.now());
+            return bookingStorage.findBookingsByBookerAndStartAfterOrderByStartDesc(user, LocalDateTime.now(), pageable);
         }
         if (state.equals(BookingState.PAST)) {
-            return bookingStorage.findBookingsByBookerAndEndBeforeOrderByStartDesc(user, LocalDateTime.now());
+            return bookingStorage.findBookingsByBookerAndEndBeforeOrderByStartDesc(user, LocalDateTime.now(), pageable);
         }
         if (state.equals(BookingState.CURRENT)) {
-            return bookingStorage.findBookingsByBookerAndStartBeforeAndEndAfterOrderByStartDesc(user, LocalDateTime.now(), LocalDateTime.now());
+            return bookingStorage.findBookingsByBookerAndStartBeforeAndEndAfterOrderByStartDesc(user, LocalDateTime.now(), LocalDateTime.now(), pageable);
         }
 
-        return bookingStorage.findBookingsByBookerAndStatusOrderByStartDesc(user, state);
+        return bookingStorage.findBookingsByBookerAndStatusOrderByStartDesc(user, state, pageable);
     }
 
+    @Override
     @Transactional(readOnly = true)
-    public Collection<Booking> getOwnedItemsBookings(int ownerId, BookingState state) {
-        Collection<Item> items = itemService.getUsersItems(ownerId);
+    public Collection<Booking> getOwnedItemsBookings(int ownerId, BookingState state, int from, int size) {
+        if (!Pagination.isValid(from, size)) {
+            throw new ValidationException("некорректная пагинация");
+        }
+
+        int newFrom = Pagination.adjustFrom(from, size);
+        Pageable pageable = PageRequest.of(newFrom, size);
+        Collection<Item> items = itemService.getUserItems(ownerId);
 
         if (state.equals(BookingState.ALL)) {
-            return bookingStorage.findBookingsByItemInOrderByStartDesc(items);
+            return bookingStorage.findBookingsByItemInOrderByStartDesc(items, pageable);
         }
         if (state.equals(BookingState.FUTURE)) {
-            return bookingStorage.findBookingsByItemInAndStartAfterOrderByStartDesc(items, LocalDateTime.now());
+            return bookingStorage.findBookingsByItemInAndStartAfterOrderByStartDesc(items, LocalDateTime.now(), pageable);
         }
         if (state.equals(BookingState.PAST)) {
-            return bookingStorage.findBookingsByItemInAndEndBeforeOrderByStartDesc(items, LocalDateTime.now());
+            return bookingStorage.findBookingsByItemInAndEndBeforeOrderByStartDesc(items, LocalDateTime.now(), pageable);
         }
         if (state.equals(BookingState.CURRENT)) {
-            return bookingStorage.findBookingsByItemInAndStartBeforeAndEndAfterOrderByStartDesc(items, LocalDateTime.now(), LocalDateTime.now());
+            return bookingStorage.findBookingsByItemInAndStartBeforeAndEndAfterOrderByStartDesc(items, LocalDateTime.now(), LocalDateTime.now(), pageable);
         }
 
-        return bookingStorage.findBookingsByItemInAndStatusOrderByStartDesc(items, state);
+        return bookingStorage.findBookingsByItemInAndStatusOrderByStartDesc(items, state, pageable);
     }
 
     private boolean isValidPeriod(BookingDtoShort bookingDto) {

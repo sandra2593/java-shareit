@@ -13,7 +13,7 @@ public interface BookingServiceInterface {
 
     Booking getBookingById(int bookingId, int userId);
 
-    Collection<Booking> getUserBookings(int userId, BookingState state);
+    Collection<Booking> getUserBookings(int userId, BookingState state, int from, int size);
 
-    Collection<Booking> getOwnedItemsBookings(int ownerId, BookingState state);
+    Collection<Booking> getOwnedItemsBookings(int ownerId, BookingState state, int from, int size);
 }

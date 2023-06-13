@@ -41,12 +41,12 @@ public class BookingController {
     }
 
     @GetMapping
-    Collection<BookingDto> getUserBookings(@RequestHeader(HEADER_PARAM) int userId, @RequestParam(defaultValue = "ALL") BookingState state) {
-        return bookingService.getUserBookings(userId, state).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
+    Collection<BookingDto> getUserBookings(@RequestHeader(HEADER_PARAM) int userId, @RequestParam(defaultValue = "ALL") BookingState state, @RequestParam(defaultValue = "0") int from, @RequestParam(defaultValue = "2000") int size) {
+        return bookingService.getUserBookings(userId, state, from, size).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }
 
     @GetMapping("/owner")
-    Collection<BookingDto> getOwnedItemsBookings(@RequestHeader(HEADER_PARAM) int ownerId, @RequestParam(defaultValue = "ALL") BookingState state) {
-        return bookingService.getOwnedItemsBookings(ownerId, state).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
+    Collection<BookingDto> getOwnedItemsBookings(@RequestHeader(HEADER_PARAM) int ownerId, @RequestParam(defaultValue = "ALL") BookingState state, @RequestParam(defaultValue = "0") int from, @RequestParam(defaultValue = "2000") int size) {
+        return bookingService.getOwnedItemsBookings(ownerId, state, from, size).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }
 }
