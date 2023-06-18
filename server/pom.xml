@@ -85,6 +85,16 @@
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
+                        <configuration>
+                            <output>file</output>
+                            <excludes>
+                                <exclude>**/exception/**</exclude>
+                                <exclude>**/pagination/**</exclude>
+                                <exclude>**/convert/**</exclude>
+                                <exclude>**/dto/**</exclude>
+                                <exclude>**/controller/**</exclude>
+                            </excludes>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>

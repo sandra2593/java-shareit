@@ -64,4 +64,7 @@ public interface BookingStorageDb extends JpaRepository<Booking, Integer> {
     List<Booking> getItemsNextBookings(Collection<Item> items);
 
     Collection<Booking> getBookingsByBookerAndItemAndEndIsBeforeAndStatus(User user, Item item, LocalDateTime currentTime, BookingStatus state);
+
+    List<Booking> findBookingsByItemInAndStatusNot(Collection<Item> items, BookingStatus status);
+
 }
