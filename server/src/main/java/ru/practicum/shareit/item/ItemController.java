@@ -7,7 +7,6 @@ import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
