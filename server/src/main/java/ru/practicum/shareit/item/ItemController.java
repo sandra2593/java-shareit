@@ -6,7 +6,6 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.service.ItemService;
 
-import javax.validation.Valid;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -22,7 +21,7 @@ public class ItemController {
     }
 
     @PostMapping
-    public ItemDto create(@RequestHeader(value = HEADER_PARAM) int userId, @Valid @RequestBody ItemDto newItemDto) {
+    public ItemDto create(@RequestHeader(value = HEADER_PARAM) int userId, @RequestBody ItemDto newItemDto) {
         return ItemMapper.toItemDto(itemService.create(userId, newItemDto));
     }
 

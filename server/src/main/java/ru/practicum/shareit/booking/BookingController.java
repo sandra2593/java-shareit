@@ -8,7 +8,6 @@ import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingState;
 import ru.practicum.shareit.booking.service.BookingService;
 
-import javax.validation.Valid;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -25,7 +24,7 @@ public class BookingController {
     }
 
     @PostMapping
-    public BookingDto create(@RequestHeader(value = HEADER_PARAM) int userId, @Valid @RequestBody BookingDtoShort newBookingDto) {
+    public BookingDto create(@RequestHeader(value = HEADER_PARAM) int userId, @RequestBody BookingDtoShort newBookingDto) {
         return BookingMapper.toBookingDto(bookingService.create(userId, newBookingDto));
     }
 

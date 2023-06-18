@@ -7,7 +7,6 @@ import ru.practicum.shareit.request.dto.RequestDto;
 import ru.practicum.shareit.request.dto.RequestMapper;
 import ru.practicum.shareit.request.service.RequestService;
 
-import javax.validation.Valid;
 import java.util.Collection;
 
 @RestController
@@ -22,7 +21,7 @@ public class RequestController {
     }
 
     @PostMapping
-    public RequestDto create(@RequestHeader(HEADER_PARAM) int userId, @Valid @RequestBody RequestDto requestDto) {
+    public RequestDto create(@RequestHeader(HEADER_PARAM) int userId, @RequestBody RequestDto requestDto) {
         return RequestMapper.toRequestDto(requestService.create(userId, RequestMapper.fromRequestDto(requestDto)));
     }
 

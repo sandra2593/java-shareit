@@ -6,8 +6,6 @@ import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.comment.dto.CommentMapper;
 import ru.practicum.shareit.comment.service.CommentService;
 
-import javax.validation.Valid;
-
 @RestController
 @RequestMapping("/items")
 public class CommentController {
@@ -20,7 +18,7 @@ public class CommentController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentDto addComment(@PathVariable int itemId, @RequestHeader(value = HEADER_PARAM) int userId, @Valid @RequestBody CommentDto commentDto) {
+    public CommentDto addComment(@PathVariable int itemId, @RequestHeader(value = HEADER_PARAM) int userId, @RequestBody CommentDto commentDto) {
         return CommentMapper.toCommentDto(commentService.addComment(itemId, userId, CommentMapper.fromCommentDto(commentDto)));
     }
 }

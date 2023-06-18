@@ -6,7 +6,6 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.service.UserService;
 
-import javax.validation.Valid;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -21,7 +20,7 @@ public class UserController {
     }
 
     @PostMapping
-    public UserDto create(@Valid @RequestBody UserDto user) {
+    public UserDto create(@RequestBody UserDto user) {
         return UserMapper.toUserDto(userService.create(UserMapper.fromUserDto(user)));
     }
 
